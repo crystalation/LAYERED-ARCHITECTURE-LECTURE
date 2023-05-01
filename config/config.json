@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "4321aaaa",
-    "database": "layered_architecture_pattern_db",
+    "database": "layered-arch-lv5",
     "host": "express-database.cv64ek1xh9gd.ap-northeast-2.rds.amazonaws.com",
     "dialect": "mysql"
   },

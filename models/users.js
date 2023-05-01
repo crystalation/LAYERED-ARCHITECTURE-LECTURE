@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Posts extends Model {
+  class Users extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -10,46 +10,43 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      // 1. Posts 모델에서
-      this.belongsTo(models.Users, {
-        // 2. Users 모델에게 N:1 관계 설정을 합니다.
-        targetKey: 'userId', // 3. Users 모델의 userId 컬럼을
+      // 1. Users 모델에서
+      this.hasMany(models.Posts, {
+        // 2. Posts 모델에게 1:N 관계 설정을 합니다.
+        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
         foreignKey: 'UserId', // 4. Posts 모델의 UserId 컬럼과 연결합니다.
       });
 
-      // 1. Posts 모델에서
+      //1. Users 모델에서
       this.hasMany(models.Comments, {
         // 2. Comments 모델에게 1:N 관계 설정을 합니다.
-        sourceKey: 'postId', // 3. Posts 모델의 postId 컬럼을
-        foreignKey: 'PostId', // 4. Comments 모델의 PostId 컬럼과 연결합니다.
+        sourceKey: 'userId', // 3. Users 모델의 userId 컬럼을
+        foreignKey: 'UserId', // 4. Comments 모델의 UserId 컬럼과 연결합니다.
       });
 
       // Users 모델에서
       this.hasMany(models.Likes, {
         // Likes 모델에게 1:N 관계 설정을 합니다.
-        sourceKey: 'postId', // Users 모델의 userId 컬럼을
-        foreignKey: 'PostId', // Posts 모델의 UserId 컬럼과 연결합니다.
+        sourceKey: 'userId', // Users 모델의 userId 컬럼을
+        foreignKey: 'UserId', // Likes 모델의 UserId 컬럼과 연결합니다.
       });
     }
   }
 
-  Posts.init(
+  Users.init(
     {
-      postId: {
+      userId: {
         allowNull: false, // NOT NULL
         autoIncrement: true, // AUTO_INCREMENT
         primaryKey: true, // Primary Key (기본키)
         type: DataTypes.INTEGER,
       },
-      UserId: {
-        allowNull: false, // NOT NULL
-        type: DataTypes.INTEGER,
-      },
-      title: {
+      nickname: {
         allowNull: false, // NOT NULL
         type: DataTypes.STRING,
+        unique: true,
       },
-      content: {
+      password: {
         allowNull: false, // NOT NULL
         type: DataTypes.STRING,
       },
@@ -66,8 +63,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Posts',
+      modelName: 'Users',
     }
   );
-  return Posts;
+  return Users;
 };
