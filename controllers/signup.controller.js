@@ -15,16 +15,43 @@ class SignupController {
         throw myError(400, '모든 필드는 필수값 입니다.');
       }
 
+      // 닉네임 길이 제한
+      if (nickname.length < 3) {
+        throw myError(412, '닉네임 형식이 일치하지 않습니다.');
+      }
+
+      // 닉네임 형식
+      const nicknameRegex = /^[a-zA-Z0-9]+$/;
+      if (!nicknameRegex.test(nickname)) {
+        throw myError(412, '닉네임 형식이 일치하지 않습니다.');
+      }
+
+      // //사용자가 이미 존재하는지 찾을꺼야
+      const existingUser = await this.signupService.findUser(nickname);
+      if (existingUser) {
+        throw myError(412, '이미 존재하는 사용자입니다.');
+      }
+
+      // 닉네임 4자리 이상, 닉네임과 같은 값 포함
+      if (password.length < 4 || password.includes(nickname)) {
+        throw myError(412, '비밀번호 형식이 일치하지 않습니다.');
+      }
+
+      // 비번 재확인
+      if (password !== confirm) {
+        throw myError(412, '비밀번호가 일치하지 않습니다.');
+      }
+
       // 서비스 계층에 구현된 createSignup 로직을 실행합니다.
       const createsignUpdata = await this.signupService.createSignup(
         nickname,
         password,
         confirm
       );
-
       res.status(201).json({ data: createsignUpdata });
     } catch (err) {
-      res.status(err.statusCode).json({ errormessage: err.message });
+      console.log(err);
+      res.status(400).json({ errormessage: err.message });
     }
   };
 }

@@ -1,5 +1,5 @@
-//순서대로 실행된다는 것을 인지하자!!
 //signup.routes.js
+//회원가입 라우터
 const express = require('express');
 const router = express.Router();
 

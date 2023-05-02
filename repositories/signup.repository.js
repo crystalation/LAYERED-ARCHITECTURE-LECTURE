@@ -1,6 +1,12 @@
 const { Users } = require('../models');
 
 class SignupRepository {
+  //사용자가 이미 있는지 service에 전달해줄 user 정보
+  findUser = async (nickname) => {
+    const user = await Users.findOne({ where: { nickname } });
+    return user;
+  };
+
   createSignup = async (nickname, password) => {
     // ORM인 Sequelize에서 Posts 모델의 create 메소드를 사용해 데이터를 요청합니다.
     const createSignupData = await Users.create({
@@ -8,11 +14,6 @@ class SignupRepository {
       password,
     });
     return createSignupData;
-  };
-
-  findUser = async (nickname) => {
-    const user = await Users.findOne({ where: { nickname } });
-    return user;
   };
 }
 
