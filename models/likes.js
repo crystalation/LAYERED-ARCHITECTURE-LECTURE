@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Likes.init(
     {
-      likeId: {
+      id: {
         allowNull: false, // NOT NULL
         autoIncrement: true, // AUTO_INCREMENT
         primaryKey: true, // Primary Key (기본키)
