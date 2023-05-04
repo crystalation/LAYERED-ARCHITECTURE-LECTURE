@@ -9,6 +9,6 @@ const likesController = new LikesController();
 router.put('/:postId/likes', authMiddleware, likesController.putLikes);
 
 //좋아요 게시글 조회하기
-// router.get('/posts/:postId/likes', authMiddleware, likesController.getLikes);
+router.get('/', authMiddleware, likesController.getLikes);
 
 module.exports = router;

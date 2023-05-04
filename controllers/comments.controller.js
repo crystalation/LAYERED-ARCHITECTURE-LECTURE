@@ -94,8 +94,3 @@ class CommentsController {
 
 module.exports = CommentsController;
 
-// const commentsData = await this.commentsService.createComment(
-//   userId,
-//   postId,
-//   content
-// );

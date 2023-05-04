@@ -38,11 +38,8 @@ class CommentsRepository {
   putComment = async (commentId, content) => {
     //db에서 commentId기반으로 댓글을 찾는다
     const existsComment = await Comments.findByPk(commentId);
-    console.log(existsComment);
-    //여기까진 불러와짐.
-
     existsComment.comment = content;
-    console.log(content);
+
     await existsComment.save();
     return existsComment;
   };

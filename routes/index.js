@@ -10,6 +10,7 @@ const commentsRouter = require('./comments.routes');
 const likesRouter = require('./likes.routes');
 
 router.use('/posts/', [postsRouter, commentsRouter, likesRouter]);
+router.use('/likes', likesRouter);
 router.use('/signup/', signupRouter);
 router.use('/login/', loginRouter);
 

@@ -8,7 +8,7 @@ class PostsService {
   //게시글작성 함수
   createPost = async (userId, title, content) => {
     // 저장소(Repository)에게 데이터를 요청합니다.
-    const createPostData = await this.postRepository.createPost(
+    const createPostData = await this.postsRepository.createPost(
       userId,
       title,
       content
@@ -16,7 +16,7 @@ class PostsService {
     return createPostData;
   };
 
-  //게시글 조회 함수
+  //게시글 전체 조회 함수
   findAllPost = async () => {
     // 저장소(Repository)에게 데이터를 요청합니다.
     const allPost = await this.postsRepository.findAllPost();
@@ -32,7 +32,7 @@ class PostsService {
     return allPost.map((post) => {
       return {
         postId: post.postId,
-        UserId: post.userId,
+        UserId: post.UserId,
         title: post.title,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
@@ -40,16 +40,31 @@ class PostsService {
     });
   };
 
+  //게시글 상세조회
   findPostById = async (postId) => {
     const post = await this.postsRepository.findPostById(postId);
+
     return {
       postId: post.postId,
-      UserId: post.userId,
+      UserId: post.UserId,
       title: post.title,
       content: post.content,
+      likes: post.likes,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
     };
+  };
+
+  //게시글 수정
+  putPost = async (postId, title, content) => {
+    const post = await this.postsRepository.putPost(postId, title, content);
+    return post;
+  };
+
+  //게시글 삭제
+  deletePost = async (postId) => {
+    await this.postsRepository.deletePost(postId);
+    return;
   };
 }
 

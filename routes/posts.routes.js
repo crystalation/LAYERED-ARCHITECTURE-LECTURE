@@ -17,4 +17,10 @@ router.get('/', authMiddleware, postsController.getPosts);
 //특정 게시물 가져오기
 router.get('/:postId', authMiddleware, postsController.getPost);
 
+//게시물 수정하기
+router.put('/:postId', authMiddleware, postsController.putPost);
+
+//게시물 삭제하기
+router.delete('/:postId', authMiddleware, postsController.deletePost);
+
 module.exports = router;
