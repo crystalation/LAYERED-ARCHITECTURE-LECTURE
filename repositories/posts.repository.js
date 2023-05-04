@@ -28,27 +28,29 @@ class PostsRepository {
   //게시글 상세 조회
   findPostById = async (postId) => {
     const post = await Posts.findByPk(postId);
-    console.log(post);
     return post;
   };
+  //게시글이 없으면 post=null
 
   //게시글 수정
   putPost = async (postId, title, content) => {
     const existsPost = await Posts.findByPk(postId);
     console.log(existsPost);
+
     existsPost.title = title;
     existsPost.content = content;
-    existsPost.updatedAt = new Date();
-
     await existsPost.save();
     return existsPost;
   };
 
+  // const updatedPost = await Posts.update(
+  //   { title, content },
+  //   { where: { postId } }
+
   //게시글 삭제
   deletePost = async (postId) => {
-    const post = await Posts.findByPk(postId);
-    await post.destroy();
-    return;
+    const existpost = await Posts.destroy({ where: { postId } });
+    return existpost;
   };
 }
 

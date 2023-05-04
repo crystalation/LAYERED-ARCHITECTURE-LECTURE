@@ -46,8 +46,8 @@ class CommentsRepository {
 
   //댓글삭제
   deleteComment = async (commentId) => {
-    const comment = await Comments.findByPk(commentId);
-    await comment.destroy();
+    await Comments.destroy({ where: { commentId } });
+    return;
   };
 }
 
