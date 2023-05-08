@@ -1,5 +1,5 @@
-const { post } = require('../routes');
 const PostsService = require('../services/posts.service');
+const postSchema = require('../validation/joi-schemas');
 
 // Post의 컨트롤러(Controller)역할을 하는 클래스
 class PostsController {
@@ -9,19 +9,29 @@ class PostsController {
   createPost = async (req, res, next) => {
     try {
       const { userId } = res.locals.user;
-      const { title, content } = req.body;
+      //Joi로 body를 validate
+      const validatedBody = await postSchema.createPostSchema.validateAsync(
+        req.body
+      );
 
       // 서비스 계층에 구현된 createPost 로직을 실행합니다.
       const createPostData = await this.postsService.createPost(
         userId,
-        title,
-        content
+        validatedBody.title,
+        validatedBody.content
       );
 
-      res.status(201).json({ data: createPostData });
-    } catch (err) {
-      console.error(err);
-      res.status(400).json({ errormessage: err });
+      res
+        .status(201)
+        .json({ message: '게시글을 작성하였습니다.', createPostData });
+    } catch (error) {
+      console.error(error);
+      if (error.isJoi) {
+        return res
+          .status(412)
+          .json({ message: '데이터 형식이 올바르지 않습니다.' });
+      }
+      throw new Error(error.message || '400/게시글작성에 실패했습니다.');
     }
   };
 
@@ -40,8 +50,9 @@ class PostsController {
       const post = await this.postsService.findPostById(postId);
 
       res.status(200).json({ data: post });
-    } catch (err) {
-      res.status(err.statusCode).json({ errormessage: err.message });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message || '400/게시글작성에 실패했습니다.');
     }
   };
 
@@ -50,34 +61,46 @@ class PostsController {
     try {
       const { userId } = res.locals.user;
       const { postId } = req.params;
-      const { title, content } = req.body;
 
       const existsPost = await this.postsService.findPostById(postId);
+      const validatedBody = await updatePostSchema.validateAsync(req.body);
 
-      if (!title || !content) {
-        throw myError(412, '데이터 형식이 올바르지 않습니다.');
-      }
+      // if (!title || !content) {
+      //   throw new Error('412/데이터 형식이 올바르지 않습니다.');
+      // }
 
-      if (typeof title !== 'string') {
-        throw myError(412, '제목 형식이 올바르지 않습니다.');
-      }
+      // if (typeof title !== 'string') {
+      //   throw new Error('412/제목 형식이 올바르지 않습니다.');
+      // }
 
-      if (typeof content !== 'string') {
-        throw myError(412, '게시글 형식이 올바르지 않습니다.');
-      }
+      // if (typeof content !== 'string') {
+      //   throw new Error('412/게시글 형식이 올바르지 않습니다.');
+      // }
 
       if (userId !== existsPost.UserId) {
-        throw myError(403, '게시글의 수정 권한이 존재하지 않습니다.');
+        throw new Error('403/게시글의 수정 권한이 존재하지 않습니다.');
       }
+
+      await this.postsService.putPost(
+        postId,
+        validatedBody.title || existsPost.title,
+        validatedBody.content || existsPost.content
+      );
 
       //조건을 다 통과했으면 수정
       const putPost = await this.postsService.putPost(postId, title, content);
       return res
         .status(201)
         .json({ message: '게시글을 수정하였습니다.', putPost });
-    } catch (err) {
-      console.error(err);
-      res.status(err.statusCode).json({ errormessage: err.message });
+    } catch (error) {
+      //여기서 catch 되는건 service에서 보낸거
+      console.error(error);
+      if (error.isJoi) {
+        return res
+          .status(412)
+          .json({ message: '데이터 형식이 올바르지 않습니다.' });
+      }
+      throw new Error(error.message || '400/게시글 수정에 실패했습니다.');
     }
   };
 
@@ -93,9 +116,9 @@ class PostsController {
       }
       await this.postsService.deletePost(postId);
       return res.status(200).json({ message: '게시글을 삭제하였습니다.' });
-    } catch (err) {
-      console.error(err);
-      res.status(err.statusCode).json({ errormessage: err.message });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message || '400/게시글 수정에 실패했습니다.');
     }
   };
 }

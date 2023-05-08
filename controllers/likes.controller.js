@@ -7,6 +7,10 @@ class LikesController {
       const { postId } = req.params;
       const { userId } = res.locals.user;
 
+      //좋아요 테이블 안에 좋아요하고자 하는 postId가 있는지부터 찾아야함, 없다면 error
+      const existsPost = await this.likesService.findOnePost(postId);
+
+      //좋아요 table에 해당 postId가 있다면 좋아요 취소
       const existsLike = await this.likesService.findLike(postId, userId);
 
       if (existsLike) {
@@ -19,17 +23,15 @@ class LikesController {
 
       //좋아요할 게시글이 없으면 좋아요를 등록하지 못함
       //postId의 게시글이 있는지 확인
-      const existsPost = await this.likesService.findOnePost(postId);
 
       if (existsPost) {
         const createLike = await this.likesService.putLikes(postId, userId);
         await this.likesService.addLike(postId);
         res.status(201).json({ message: '좋아요를 추가했습니다.', createLike });
       }
-    } catch (err) {
-      res.status(err.statusCode).json({
-        errormessage: err.message,
-      });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message || '400/좋아요 등록에 실패했습니다.');
     }
   };
 
@@ -38,10 +40,11 @@ class LikesController {
     try {
       const posts = await this.likesService.findPostLikes(userId);
       return res.status(201).json({ posts });
-    } catch (err) {
-      res
-        .status(400)
-        .json({ errormessage: '좋아요 게시글 조회에 실패했습니다.' });
+    } catch (error) {
+      console.error(error);
+      throw new Error(
+        error.message || '400/좋아요 게시글 조회에 실패했습니다.'
+      );
     }
   };
 }

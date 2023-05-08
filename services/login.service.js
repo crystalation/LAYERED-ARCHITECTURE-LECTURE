@@ -1,5 +1,5 @@
 const LoginRepository = require('../repositories/login.repository');
-// const myError = require('../utils/error');
+
 const jwt = require('jsonwebtoken');
 
 class LoginService {
@@ -10,6 +10,9 @@ class LoginService {
       nickname,
       password
     );
+    if (!existingUser) {
+      throw new Error('412/닉네임 혹은 비밀번호를 확인해주세요.');
+    }
     return existingUser;
   };
 

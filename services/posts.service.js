@@ -1,5 +1,5 @@
 const PostsRepository = require('../repositories/posts.repository');
-const myError = require('../utils/error');
+
 //실제로 db를 끌어다 쓰기때문에 repository를 호출한다.
 
 //findAll, create 두가지 메서드를 사용
@@ -35,6 +35,7 @@ class PostsService {
         postId: post.postId,
         UserId: post.UserId,
         title: post.title,
+        likes: post.likes,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
       };
@@ -46,7 +47,7 @@ class PostsService {
     const post = await this.postsRepository.findPostById(postId);
 
     if (!post) {
-      throw myError(404, '게시글이 존재하지 않습니다.');
+      throw new Error('404/게시글이 존재하지 않습니다.');
     }
     return post;
   };

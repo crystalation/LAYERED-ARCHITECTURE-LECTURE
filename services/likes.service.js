@@ -1,14 +1,14 @@
 const LikesRepository = require('../repositories/likes.repository');
-const myError = require('../utils/error');
 
 class LikesService {
   likesRepository = new LikesRepository();
 
-  //좋아요할 게시물이 있는지 찾아보기
+  //좋아요할 게시물이 있는지 찾아보기,
+  //없으면 controller로 error
   findOnePost = async (postId) => {
     const existsPost = await this.likesRepository.findOnePost(postId);
     if (!existsPost) {
-      throw myError(404, '게시글이 존재하지 않습니다.');
+      throw new Error('404/ 게시글이 존재하지 않습니다.');
     }
     return existsPost;
   };

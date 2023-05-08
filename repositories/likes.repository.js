@@ -10,6 +10,8 @@ class LikesRepository {
   };
 
   //이미 좋아요를 눌렀는지 확인하기
+  //Likes 테이블에 {postId, userId}가 있는지 확인
+
   findLike = async (postId, userId) => {
     const existsLike = await Likes.findOne({
       where: { PostId: postId, UserId: userId },
@@ -54,6 +56,7 @@ class LikesRepository {
   //좋아요한 게시물 찾기, 게시물 작성자는 N
   findLikePosts = async (userId) => {
     const LikePosts = await Posts.findAll({
+      //nickname을 끌어와서 포함시킨  모든 게시물을 찾아와
       attributes: [
         'postId',
         'UserId',
@@ -76,6 +79,7 @@ class LikesRepository {
       ],
       order: [['likes', 'DESC']],
     });
+    console.log(LikePosts);
     return LikePosts;
   };
 }

@@ -3,6 +3,7 @@
 const { Users } = require('../models');
 
 class LoginRepository {
+  //사용자가 존재하는지 찾아본다
   findUser = async (nickname, password) => {
     const user = await Users.findOne({ where: { nickname, password } });
     return user;

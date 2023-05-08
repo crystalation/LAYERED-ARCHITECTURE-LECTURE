@@ -13,7 +13,7 @@ class CommentsController {
 
       const post = await this.commentsService.findCommentById(postId);
       if (!post) {
-        return res.status(404).json({ message: '게시글이 존재하지 않습니다.' });
+        throw new Error({ message: '게시글이 존재하지 않습니다.' });
       }
 
       const commentsData = await this.commentsService.createComment(
@@ -23,8 +23,9 @@ class CommentsController {
       );
 
       res.status(201).json({ data: commentsData });
-    } catch (err) {
-      res.status(400).json({ message: '댓글작성에 실패하였습니다.' });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message || '400/댓글 작성에 실패했습니다.');
     }
   };
 
@@ -35,8 +36,8 @@ class CommentsController {
       const comment = await this.commentsService.findCommentById(postId);
 
       res.status(201).json({ data: comment });
-    } catch (err) {
-      res.status(400).json({ message: '댓글조회에 실패하였습니다.' });
+    } catch (error) {
+      throw new Error(error.message || '400/댓글 조회에 실패했습니다.');
     }
   };
 
@@ -46,20 +47,17 @@ class CommentsController {
       const { postId, commentId } = req.params;
       const { content } = req.body;
 
-      //해당 게시글이 있는지 확인
-      const existsPost = await this.commentsService.findPost(postId);
-      if (!existsPost) {
-        return res.status(404).json({ message: '게시글이 존재하지 않습니다.' });
-      }
-      //게시글이 있다면 comment 수정
-      const existsComment = await this.commentsService.putComment(
-        commentId,
-        content
-      );
+      //해당 게시글이 있는지 확인, 없으면 에러날림
+      await this.commentsService.findPost(postId);
+      //게시글이 있다면 commentId를 통해 찾음
+      //comment 없다면 댓글 없음 에러 날림
+      //댓글이 있으면 수정
+      await this.commentsService.putComment(commentId, content);
+
       res.status(201).json({ message: '댓글을 수정했습니다.', existsComment });
-    } catch (err) {
-      console.error(err);
-      res.status(400).json({ message: '댓글 수정에 실패했습니다.' });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message || '400/댓글 수정에 실패했습니다.');
     }
   };
 
@@ -67,30 +65,20 @@ class CommentsController {
     try {
       const { postId, commentId } = req.params;
       //게시글이 있는지 확인
-      const existsPost = await this.commentsService.findPost(postId);
-      const existsComment = await this.commentsService.findCommentById(
-        commentId
-      );
-
-      if (!existsPost) {
-        return res.status(404).json({ message: '게시글이 존재하지 않습니다.' });
-      }
-
-      if (!existsComment) {
-        return res.status(404).json({ message: '댓글이 존재하지 않습니다.' });
-      }
+      await this.commentsService.findPost(postId);
+      //게시글이 없으면 service에서 에러 날림
+      await this.commentsService.findCommentById(commentId);
 
       //조건을 통과하면 게시글을 삭제
-      //return값은 어떻게 줘야되나?
+
       await this.commentsService.deleteComment(commentId);
 
       res.json({ message: '댓글을 삭제했습니다.' });
-    } catch (err) {
-      console.error(err);
-      res.status(400).json({ message: '댓글 삭제에 실패했습니다.' });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message || '400/댓글 삭제에 실패했습니다.');
     }
   };
 }
 
 module.exports = CommentsController;
-

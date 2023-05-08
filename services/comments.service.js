@@ -39,6 +39,9 @@ class CommentsService {
 
   findPost = async (postId) => {
     const existsPost = await this.commentsRepository.findPost(postId);
+    if (!existsPost) {
+      throw new Error('404/게시글이 존재하지 않습니다.');
+    }
     return existsPost;
   };
 
@@ -46,6 +49,9 @@ class CommentsService {
     const existsComment = await this.commentsRepository.findCommentById(
       commentId
     );
+    if (!existsComment) {
+      throw new Error('404/댓글이 존재하지 않습니다.');
+    }
     return existsComment;
   };
 
